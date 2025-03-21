@@ -1,0 +1,3 @@
+{
+  "import": ["moonbitlang/x/fs", "moonbitlang/x/sys"]
+}
