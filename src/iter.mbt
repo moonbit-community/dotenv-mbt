@@ -37,7 +37,7 @@ pub fn DotenvIter::load(self : DotenvIter) -> EnvMap!ParseBufError {
 ///|
 pub fn DotenvIter::load_and_modify(self : DotenvIter) -> EnvMap!ParseBufError {
   // Not thread-safe
-  let vars  = @sys.get_env_vars()
+  let vars = @sys.get_env_vars()
   self.internal_load!(fn(k, v, map) {
     if not(vars.contains(k)) {
       @sys.set_env_var(k, v)
