@@ -1,5 +1,5 @@
 {
-  "name": "ShellWen/dotenv-mbt",
+  "name": "ShellWen/dotenv",
   "version": "0.1.0",
   "deps": {
     "moonbitlang/x": "0.4.22"
@@ -7,10 +7,7 @@
   "readme": "README.md",
   "repository": "https://github.com/moonbit-community/dotenv-mbt.git",
   "license": "Apache-2.0",
-  "keywords": [
-    "dotenv",
-    "moonbit"
-  ],
+  "keywords": ["dotenv", "moonbit"],
   "description": "Yet another dotenv utility for MoonBit.",
   "source": "src"
 }
