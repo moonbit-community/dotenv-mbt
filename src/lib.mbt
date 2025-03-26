@@ -10,7 +10,7 @@ pub fn EnvMap::new() -> EnvMap {
 }
 
 ///|
-pub fn EnvLoader::var(self : EnvMap, name : String) -> String!DotenvError {
+pub fn EnvMap::var(self : EnvMap, name : String) -> String!DotenvError {
   match self.map.get(name) {
     Some(value) => value
     None => raise DotenvError::NotPresent(name)
