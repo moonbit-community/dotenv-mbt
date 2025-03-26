@@ -1,10 +1,10 @@
 # 📄 dotenv-mbt: MoonBit 环境变量加载器
 
-[English](https://github.com/moonbit-community/dotenv-mbt/blob/master/README.md) | [简体中文](https://github.com/moonbit-community/dotenv-mbt/blob/master/README_zh_CN.md)
+[English](https://github.com/moonbit-community/dotenv-mbt/blob/main/README.md) | [简体中文](https://github.com/moonbit-community/dotenv-mbt/blob/main/README_zh_CN.md)
 
 [![Build Status](https://img.shields.io/github/actions/workflow/status/moonbit-community/dotenv-mbt/check.yaml)](https://github.com/moonbit-community/dotenv-mbt/actions)
 [![License](https://img.shields.io/github/license/moonbit-community/dotenv-mbt)](LICENSE)
-[![codecov](https://codecov.io/gh/moonbit-community/dotenv-mbt/branch/master/graph/badge.svg)](https://codecov.io/gh/moonbit-community/dotenv-mbt)
+[![codecov](https://codecov.io/gh/moonbit-community/dotenv-mbt/branch/main/graph/badge.svg)](https://codecov.io/gh/moonbit-community/dotenv-mbt)
 
 **dotenv-mbt** 是一个用于在 MoonBit 应用程序中从 `.env` 文件加载环境变量的实用程序库。受到 Rust 的 [dotenvy](https://github.com/allan2/dotenvy) crate 的启发，它提供了一种简单而有效的方式来通过环境文件管理配置。
 
@@ -158,7 +158,7 @@ fn main {
 
 ## 📜 许可证
 
-本项目根据 Apache-2.0 许可证获得许可。 有关详细信息，请参见 [LICENSE](https://github.com/moonbit-community/dotenv-mbt/blob/master/LICENSE)。
+本项目根据 Apache-2.0 许可证获得许可。 有关详细信息，请参见 [LICENSE](https://github.com/moonbit-community/dotenv-mbt/blob/main/LICENSE)。
 
 ## 📢 联系方式 & 支持
 

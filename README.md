@@ -1,10 +1,10 @@
 # 📄 dotenv-mbt: A MoonBit Environment Variable Loader
 
-[English](https://github.com/moonbit-community/dotenv-mbt/blob/master/README.md) | [简体中文](https://github.com/moonbit-community/dotenv-mbt/blob/master/README_zh_CN.md)
+[English](https://github.com/moonbit-community/dotenv-mbt/blob/main/README.md) | [简体中文](https://github.com/moonbit-community/dotenv-mbt/blob/main/README_zh_CN.md)
 
 [![Build Status](https://img.shields.io/github/actions/workflow/status/moonbit-community/dotenv-mbt/check.yaml)](https://github.com/moonbit-community/dotenv-mbt/actions)
 [![License](https://img.shields.io/github/license/moonbit-community/dotenv-mbt)](LICENSE)
-[![codecov](https://codecov.io/gh/moonbit-community/dotenv-mbt/branch/master/graph/badge.svg)](https://codecov.io/gh/moonbit-community/dotenv-mbt)
+[![codecov](https://codecov.io/gh/moonbit-community/dotenv-mbt/branch/main/graph/badge.svg)](https://codecov.io/gh/moonbit-community/dotenv-mbt)
 
 **dotenv-mbt** is a utility library for loading environment variables from `.env` files in MoonBit applications. Inspired by Rust's [dotenvy](https://github.com/allan2/dotenvy) crate, it provides a simple and efficient way to manage configuration through environment files.
 
@@ -158,7 +158,7 @@ The README of this project is inspired by [NyaSearch](https://github.com/moonbit
 
 ## 📜 License
 
-This project is licensed under the Apache-2.0 License. See [LICENSE](https://github.com/moonbit-community/dotenv-mbt/blob/master/LICENSE) for details.
+This project is licensed under the Apache-2.0 License. See [LICENSE](https://github.com/moonbit-community/dotenv-mbt/blob/main/LICENSE) for details.
 
 ## 📢 Contact & Support
 
