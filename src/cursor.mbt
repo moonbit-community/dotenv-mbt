@@ -105,7 +105,7 @@ pub fn Cursor::next_line(self : Cursor) -> Result[String, ParseBufError]? {
             return Some(Ok(""))
           }
           let result = cur_state.eval_end(
-            buf[buf_pos.reinterpret_as_int():].to_string(),
+            buf.view(start_offset=buf_pos.reinterpret_as_int()).to_string(),
           )
           cur_pos = result.0
           cur_state = result.1
@@ -125,7 +125,14 @@ pub fn Cursor::next_line(self : Cursor) -> Result[String, ParseBufError]? {
             | ParseState::WhiteSpace => ()
             ParseState::Comment =>
               return Some(
-                Ok(buf[:(buf_pos + cur_pos).reinterpret_as_int()].to_string()),
+                Ok(
+                  buf
+                  .view(
+                    start_offset=0,
+                    end_offset=(buf_pos + cur_pos).reinterpret_as_int(),
+                  )
+                  .to_string(),
+                ),
               )
           }
         }
