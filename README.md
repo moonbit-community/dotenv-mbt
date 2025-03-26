@@ -80,7 +80,7 @@ After loading the environment, you can access variables using the `var` method:
 let env_map = @dotenv.EnvLoader::new?().unwrap().load?().unwrap()
 
 // Get a variable (returns Result)
-let host = env_map.var?("HOST")
+let host = env_map.var?("HOST").unwrap()
 
 // Get with default value if not found
 let port = env_map.var?("PORT").or("8080")
@@ -133,7 +133,7 @@ fn main {
   let env = @dotenv.EnvLoader::new?().unwrap().load?().unwrap()
 
   // Access variables
-  let host = env.var?("HOST")
+  let host = env.var?("HOST").unwrap()
   let port = env.var?("PORT").or("8080") // Default to 8080 if not set
 
   // Use variables in your application

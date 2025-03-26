@@ -80,7 +80,7 @@ let loader2 = @dotenv.EnvLoader::new?().unwrap()
 let env_map = @dotenv.EnvLoader::new?().unwrap().load?().unwrap()
 
 // 获取变量 (返回 Result)
-let host = env_map.var?("HOST")
+let host = env_map.var?("HOST").unwrap()
 
 // 获取变量，如果未找到则使用默认值
 let port = env_map.var?("PORT").or("8080")
@@ -133,7 +133,7 @@ fn main {
   let env = @dotenv.EnvLoader::new?().unwrap().load?().unwrap()
 
   // 访问变量
-  let host = env.var?("HOST")
+  let host = env.var?("HOST").unwrap()
   let port = env.var?("PORT").or("8080") // 默认值为 8080，如果未设置
 
   // 在您的应用程序中使用变量
