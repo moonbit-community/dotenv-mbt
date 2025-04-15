@@ -50,19 +50,7 @@ pub fn EnvLoader::new() -> EnvLoader!DotenvError {
 ///|
 pub fn EnvLoader::from_path(path : String) -> EnvLoader!DotenvError {
   let str = @fs.read_file_to_string?(path)
-    .map_err(fn(e) {
-      match e {
-        @fs.IOError(e) => DotenvError::Io(@fs.IOError(e), path)
-        _ =>
-          DotenvError::Io(
-            @fs.IOError(
-              "Unexpected error occurred while reading the file: " +
-              e.to_string(),
-            ),
-            path,
-          )
-      }
-    })
+    .map_err(fn(e) { DotenvError::Io(e, path) })
     .unwrap_or_error!()
   { path: Some(path), str, sequence: EnvSequence::default() }
 }
