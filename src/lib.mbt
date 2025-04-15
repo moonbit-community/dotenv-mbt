@@ -39,9 +39,9 @@ pub struct EnvLoader {
 }
 
 ///|
-pub fn EnvLoader::new() -> EnvLoader!DotenvError {
+pub fn EnvLoader::new(path~ : String = "./.env") -> EnvLoader!DotenvError {
   /// Creates a new `EnvLoader` with the path set to `./.env` in the current directory.
-  EnvLoader::from_path!("./.env")
+  EnvLoader::from_path!(path)
 }
 
 ///|
@@ -148,6 +148,12 @@ pub fn EnvLoader::load(self : EnvLoader) -> EnvMap!DotenvError {
   }
 }
 
+///| Shortcut for loading environment variables from a file.
+/// Equivalent to `EnvLoader::from_path(path).load()`.
+pub fn load(path~ : String = "./.env") -> EnvMap!DotenvError {
+  EnvLoader::from_path!(path).load!()
+}
+
 ///| Loads environment variables into a hash map, modifying the existing environment.
 ///
 /// This calls `@sys.set_env_var` internally.
@@ -173,4 +179,10 @@ pub fn EnvLoader::load_and_modify(self : EnvLoader) -> EnvMap!DotenvError {
       input
     }
   }
+}
+
+///| Shortcut for loading environment variables from a file and modifying the existing environment.
+/// Equivalent to `EnvLoader::from_path(path).load_and_modify()`.
+pub fn load_and_modify(path~ : String = "./.env") -> EnvMap!DotenvError {
+  EnvLoader::from_path!(path).load_and_modify!()
 }

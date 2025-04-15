@@ -1,6 +1,10 @@
 package "ShellWen/dotenv"
 
 // Values
+fn load(path~ : String = ..) -> EnvMap!DotenvError
+
+fn load_and_modify(path~ : String = ..) -> EnvMap!DotenvError
+
 fn temp_env[R, E : Error](Map[String, String], () -> R!E) -> R!E
 
 // Types and methods
@@ -19,7 +23,7 @@ impl EnvLoader {
   from_string(String) -> Self
   load(Self) -> EnvMap!DotenvError
   load_and_modify(Self) -> EnvMap!DotenvError
-  new() -> Self!DotenvError
+  new(path~ : String = ..) -> Self!DotenvError
   set_path(Self, String?) -> Self
   set_sequence(Self, EnvSequence) -> Self
 }
