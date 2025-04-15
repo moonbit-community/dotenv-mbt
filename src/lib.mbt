@@ -143,9 +143,17 @@ pub fn EnvLoader::load(self : EnvLoader) -> EnvMap!DotenvError {
 }
 
 ///| Shortcut for loading environment variables from a file.
-/// Equivalent to `EnvLoader::from_path(path).load()`.
-pub fn load(path~ : String = "./.env") -> EnvMap!DotenvError {
-  EnvLoader::from_path!(path).load!()
+pub fn load(
+  path~ : String = "./.env",
+  ignore_file_not_found~ : Bool = true
+) -> EnvMap?!DotenvError {
+  if @fs.path_exists(path) && @fs.is_file?(path).or(false) {
+    Some(EnvLoader::from_path!(path).load!())
+  } else if ignore_file_not_found {
+    None
+  } else {
+    raise DotenvError::FileNotFound(path)
+  }
 }
 
 ///| Loads environment variables into a hash map, modifying the existing environment.
@@ -176,7 +184,15 @@ pub fn EnvLoader::load_and_modify(self : EnvLoader) -> EnvMap!DotenvError {
 }
 
 ///| Shortcut for loading environment variables from a file and modifying the existing environment.
-/// Equivalent to `EnvLoader::from_path(path).load_and_modify()`.
-pub fn load_and_modify(path~ : String = "./.env") -> EnvMap!DotenvError {
-  EnvLoader::from_path!(path).load_and_modify!()
+pub fn load_and_modify(
+  path~ : String = "./.env",
+  ignore_file_not_found~ : Bool = true
+) -> EnvMap?!DotenvError {
+  if @fs.path_exists(path) && @fs.is_file?(path).or(false) {
+    Some(EnvLoader::from_path!(path).load_and_modify!())
+  } else if ignore_file_not_found {
+    None
+  } else {
+    raise DotenvError::FileNotFound(path)
+  }
 }

@@ -1,14 +1,15 @@
 package "ShellWen/dotenv"
 
 // Values
-fn load(path~ : String = ..) -> EnvMap!DotenvError
+fn load(path~ : String = .., ignore_file_not_found~ : Bool = ..) -> EnvMap?!DotenvError
 
-fn load_and_modify(path~ : String = ..) -> EnvMap!DotenvError
+fn load_and_modify(path~ : String = .., ignore_file_not_found~ : Bool = ..) -> EnvMap?!DotenvError
 
 fn temp_env[R, E : Error](Map[String, String], () -> R!E) -> R!E
 
 // Types and methods
 pub type! DotenvError {
+  FileNotFound(String)
   LineParseError(String, UInt)
   Io(Error, String)
   InvalidOp

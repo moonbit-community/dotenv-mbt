@@ -1,5 +1,7 @@
 ///|
 pub type! DotenvError {
+  /// When the file is not found.
+  FileNotFound(String)
   LineParseError(String, UInt)
   /// An IO error may be encountered when reading from a file.
   Io(Error, String)
