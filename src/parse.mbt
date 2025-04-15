@@ -1,5 +1,5 @@
 ///|
-pub fn parse_line(
+fn parse_line(
   line : String,
   substitution_data : @hashmap.T[String, String?]
 ) -> (String, String)?!ParseBufError {

@@ -1,11 +1,11 @@
 ///|
-pub struct DotenvIter {
-  priv cursor : Cursor
-  priv substitution_data : @hashmap.T[String, String?]
+priv struct DotenvIter {
+  cursor : Cursor
+  substitution_data : @hashmap.T[String, String?]
 }
 
 ///|
-pub fn DotenvIter::new(data : String) -> DotenvIter {
+fn DotenvIter::new(data : String) -> DotenvIter {
   let cursor = Cursor::new(data)
   { cursor, substitution_data: @hashmap.new() }
 }
@@ -30,12 +30,12 @@ fn DotenvIter::internal_load(
 }
 
 ///|
-pub fn DotenvIter::load(self : DotenvIter) -> EnvMap!ParseBufError {
+fn DotenvIter::load(self : DotenvIter) -> EnvMap!ParseBufError {
   self.internal_load!(fn(k, v, map) { map.map[k] = v })
 }
 
 ///|
-pub fn DotenvIter::load_and_modify(self : DotenvIter) -> EnvMap!ParseBufError {
+fn DotenvIter::load_and_modify(self : DotenvIter) -> EnvMap!ParseBufError {
   // Not thread-safe
   let vars = @sys.get_env_vars()
   self.internal_load!(fn(k, v, map) {
@@ -47,7 +47,7 @@ pub fn DotenvIter::load_and_modify(self : DotenvIter) -> EnvMap!ParseBufError {
 }
 
 ///|
-pub fn DotenvIter::load_and_modify_override(
+fn DotenvIter::load_and_modify_override(
   self : DotenvIter
 ) -> EnvMap!ParseBufError {
   self.internal_load!(fn(k, v, map) {

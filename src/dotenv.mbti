@@ -1,0 +1,47 @@
+package "ShellWen/dotenv"
+
+// Values
+fn temp_env[R, E : Error](Map[String, String], () -> R!E) -> R!E
+
+// Types and methods
+pub type! DotenvError {
+  LineParseError(String, UInt)
+  Io(Error, String)
+  InvalidOp
+}
+
+pub struct EnvLoader {
+  mut path : String?
+  // private fields
+}
+impl EnvLoader {
+  from_path(String) -> Self!DotenvError
+  from_string(String) -> Self
+  load(Self) -> EnvMap!DotenvError
+  load_and_modify(Self) -> EnvMap!DotenvError
+  new() -> Self!DotenvError
+  set_path(Self, String?) -> Self
+  set_sequence(Self, EnvSequence) -> Self
+}
+
+type EnvMap
+impl EnvMap {
+  var(Self, String) -> String?
+}
+
+pub(all) enum EnvSequence {
+  EnvOnly
+  EnvThenInput
+  InputOnly
+  InputThenEnv
+}
+impl Default for EnvSequence
+
+pub type! ParseBufError {
+  LineParse(String, UInt)
+}
+
+// Type aliases
+
+// Traits
+

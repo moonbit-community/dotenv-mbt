@@ -17,18 +17,18 @@ test "substitution" {
   let env_map = EnvLoader::from_string(s)
     .set_sequence(EnvSequence::InputThenEnv)
     .load!()
-  assert_eq!(env_map.map["KEY"].unwrap(), "value")
-  assert_eq!(env_map.map["KEY1"].unwrap(), "value1")
-  assert_eq!(env_map.map["KEY_U"].unwrap(), "value+valueU")
-  assert_eq!(env_map.map["STRONG_QUOTES"].unwrap(), common_string)
+  assert_eq!(env_map.var("KEY").unwrap(), "value")
+  assert_eq!(env_map.var("KEY1").unwrap(), "value1")
+  assert_eq!(env_map.var("KEY_U").unwrap(), "value+valueU")
+  assert_eq!(env_map.var("STRONG_QUOTES").unwrap(), common_string)
   assert_eq!(
-    env_map.map["WEAK_QUOTES"].unwrap(),
+    env_map.var("WEAK_QUOTES").unwrap(),
     ["", "value", "value1", "value1", "value_U", "value+valueU", "$KEY"].join(
       ">>",
     ),
   )
   assert_eq!(
-    env_map.map["NO_QUOTES"].unwrap(),
+    env_map.var("NO_QUOTES").unwrap(),
     ["", "value", "value1", "value1", "value_U", "value+valueU", "$KEY"].join(
       ">>",
     ),
@@ -52,18 +52,18 @@ test "multiline" {
   let env_map = EnvLoader::from_string(s)
     .set_sequence(EnvSequence::InputOnly)
     .load!()
-  assert_eq!(env_map.map["KEY"].unwrap(), "my cool value")
+  assert_eq!(env_map.var("KEY").unwrap(), "my cool value")
   assert_eq!(
-    env_map.map["KEY3"].unwrap(),
+    env_map.var("KEY3").unwrap(),
     #|awesome "stuff"
     #|    more
     #|    on other
     #|    lines
     ,
   )
-  assert_eq!(env_map.map["KEY4"].unwrap(), "hello 'world\n    good ' 'morning")
-  assert_eq!(env_map.map["WEAK"].unwrap(), weak)
-  assert_eq!(env_map.map["STRONG"].unwrap(), value)
+  assert_eq!(env_map.var("KEY4").unwrap(), "hello 'world\n    good ' 'morning")
+  assert_eq!(env_map.var("WEAK").unwrap(), weak)
+  assert_eq!(env_map.var("STRONG").unwrap(), value)
 }
 
 ///|
@@ -89,11 +89,11 @@ test "multiline comment" {
   let env_map = EnvLoader::from_string(s)
     .set_sequence(EnvSequence::InputOnly)
     .load!()
-  assert_eq!(env_map.map["TESTKEY1"].unwrap(), "test_val")
-  assert_eq!(env_map.map["TESTKEY2"].unwrap(), "test_val_with_#_hash")
-  assert_eq!(env_map.map["TESTKEY3"].unwrap(), "test_val quoted with # hash")
-  assert_eq!(env_map.map["TESTKEY4"].unwrap(), "Line 1\n# Line 2\nLine 3")
-  assert_eq!(env_map.map["TESTKEY5"].unwrap(), "Line 4\n# Line 5\nLine 6\n")
+  assert_eq!(env_map.var("TESTKEY1").unwrap(), "test_val")
+  assert_eq!(env_map.var("TESTKEY2").unwrap(), "test_val_with_#_hash")
+  assert_eq!(env_map.var("TESTKEY3").unwrap(), "test_val quoted with # hash")
+  assert_eq!(env_map.var("TESTKEY4").unwrap(), "Line 1\n# Line 2\nLine 3")
+  assert_eq!(env_map.var("TESTKEY5").unwrap(), "Line 4\n# Line 5\nLine 6\n")
 }
 
 ///|
@@ -103,12 +103,12 @@ test "non modify" {
     let env_map = EnvLoader::from_string(s)
       .set_sequence(EnvSequence::EnvThenInput)
       .load!()
-    assert_eq!(env_map.map["SRC"].unwrap(), "envfile")
-    assert_eq!(env_map.map["FOO"].unwrap(), "bar")
+    assert_eq!(env_map.var("SRC").unwrap(), "envfile")
+    assert_eq!(env_map.var("FOO").unwrap(), "bar")
     let env_map = EnvLoader::from_string(s)
       .set_sequence(EnvSequence::InputThenEnv)
       .load!()
-    assert_eq!(env_map.map["SRC"].unwrap(), "env")
+    assert_eq!(env_map.var("SRC").unwrap(), "env")
   })
 }
 

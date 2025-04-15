@@ -1,20 +1,17 @@
 ///|
-pub struct EnvMap {
+struct EnvMap {
   /// The map of environment variables.
   map : @hashmap.T[String, String]
 }
 
 ///|
-pub fn EnvMap::new() -> EnvMap {
+fn EnvMap::new() -> EnvMap {
   { map: @hashmap.new() }
 }
 
 ///|
-pub fn EnvMap::var(self : EnvMap, name : String) -> String!DotenvError {
-  match self.map.get(name) {
-    Some(value) => value
-    None => raise DotenvError::NotPresent(name)
-  }
+pub fn EnvMap::var(self : EnvMap, name : String) -> String? {
+  self.map.get(name)
 }
 
 ///|
@@ -37,8 +34,8 @@ pub impl Default for EnvSequence with default() {
 ///|
 pub struct EnvLoader {
   mut path : String?
-  str : String
-  mut sequence : EnvSequence
+  priv str : String
+  priv mut sequence : EnvSequence
 }
 
 ///|

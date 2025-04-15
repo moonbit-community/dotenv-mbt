@@ -1,12 +1,12 @@
 ///|
-pub struct Cursor {
-  priv data : String
+priv struct Cursor {
+  data : String
   /// The current position in the data
-  priv mut pos : UInt64
+  mut pos : UInt64
 }
 
 ///|
-pub fn Cursor::new(data : String) -> Cursor {
+fn Cursor::new(data : String) -> Cursor {
   { data, pos: 0 }
 }
 
@@ -42,12 +42,12 @@ fn Cursor::read_line(self : Cursor) -> String {
 }
 
 ///|
-pub fn Cursor::length(self : Cursor) -> UInt64 {
+fn Cursor::length(self : Cursor) -> UInt64 {
   self.data.length().to_uint64()
 }
 
 ///|
-pub fn Cursor::next(self : Cursor) -> Int? {
+fn Cursor::next(self : Cursor) -> Int? {
   if self.pos >= self.data.length().to_uint64() {
     None
   } else {
@@ -58,7 +58,7 @@ pub fn Cursor::next(self : Cursor) -> Int? {
 }
 
 ///|
-pub fn Cursor::peek(self : Cursor) -> Int? {
+fn Cursor::peek(self : Cursor) -> Int? {
   if self.pos >= self.data.length().to_uint64() {
     None
   } else {
@@ -67,17 +67,17 @@ pub fn Cursor::peek(self : Cursor) -> Int? {
 }
 
 ///|
-pub fn Cursor::pos(self : Cursor) -> UInt64 {
+fn Cursor::pos(self : Cursor) -> UInt64 {
   self.pos
 }
 
 ///|
-pub fn Cursor::set_pos(self : Cursor, pos : UInt64) -> Unit {
+fn Cursor::set_pos(self : Cursor, pos : UInt64) -> Unit {
   self.pos = pos
 }
 
 ///|
-pub fn Cursor::next_line(self : Cursor) -> Result[String, ParseBufError]? {
+fn Cursor::next_line(self : Cursor) -> Result[String, ParseBufError]? {
   for {
     let mut buf = ""
     let mut cur_state = ParseState::Complete
