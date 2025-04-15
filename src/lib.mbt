@@ -39,12 +39,6 @@ pub struct EnvLoader {
 }
 
 ///|
-pub fn EnvLoader::new(path~ : String = "./.env") -> EnvLoader!DotenvError {
-  /// Creates a new `EnvLoader` with the path set to `./.env` in the current directory.
-  EnvLoader::from_path!(path)
-}
-
-///|
 pub fn EnvLoader::from_path(path : String) -> EnvLoader!DotenvError {
   let str = @fs.read_file_to_string?(path)
     .map_err(fn(e) { DotenvError::Io(e, path) })

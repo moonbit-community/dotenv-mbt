@@ -23,7 +23,6 @@ impl EnvLoader {
   from_string(String) -> Self
   load(Self) -> EnvMap!DotenvError
   load_and_modify(Self) -> EnvMap!DotenvError
-  new(path~ : String = ..) -> Self!DotenvError
   set_path(Self, String?) -> Self
   set_sequence(Self, EnvSequence) -> Self
 }
