@@ -146,11 +146,11 @@ pub fn EnvLoader::load(self : EnvLoader) -> EnvMap!DotenvError {
 pub fn load(
   path~ : String = "./.env",
   ignore_file_not_found~ : Bool = true
-) -> EnvMap?!DotenvError {
+) -> EnvMap!DotenvError {
   if @fs.path_exists(path) && @fs.is_file?(path).or(false) {
-    Some(EnvLoader::from_path!(path).load!())
+    EnvLoader::from_path!(path).load!()
   } else if ignore_file_not_found {
-    None
+    EnvLoader::from_string("").set_sequence(EnvSequence::EnvOnly).load!()
   } else {
     raise DotenvError::FileNotFound(path)
   }
@@ -187,11 +187,12 @@ pub fn EnvLoader::load_and_modify(self : EnvLoader) -> EnvMap!DotenvError {
 pub fn load_and_modify(
   path~ : String = "./.env",
   ignore_file_not_found~ : Bool = true
-) -> EnvMap?!DotenvError {
+) -> EnvMap!DotenvError {
   if @fs.path_exists(path) && @fs.is_file?(path).or(false) {
-    Some(EnvLoader::from_path!(path).load_and_modify!())
+    EnvLoader::from_path!(path).load_and_modify!()
   } else if ignore_file_not_found {
-    None
+    // If the file is not found, we do the same as in `load`.
+    EnvLoader::from_string("").set_sequence(EnvSequence::EnvOnly).load!()
   } else {
     raise DotenvError::FileNotFound(path)
   }

@@ -1,9 +1,9 @@
 package "ShellWen/dotenv"
 
 // Values
-fn load(path~ : String = .., ignore_file_not_found~ : Bool = ..) -> EnvMap?!DotenvError
+fn load(path~ : String = .., ignore_file_not_found~ : Bool = ..) -> EnvMap!DotenvError
 
-fn load_and_modify(path~ : String = .., ignore_file_not_found~ : Bool = ..) -> EnvMap?!DotenvError
+fn load_and_modify(path~ : String = .., ignore_file_not_found~ : Bool = ..) -> EnvMap!DotenvError
 
 fn temp_env[R, E : Error](Map[String, String], () -> R!E) -> R!E
 
