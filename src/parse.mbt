@@ -23,7 +23,7 @@ fn LineParser::new(
   {
     original_line: line,
     substitution_data,
-    line: line.trim_space(), // we don’t want trailing whitespace
+    line: line.trim_space().to_string(), // we don’t want trailing whitespace
     pos: 0,
   }
 }
