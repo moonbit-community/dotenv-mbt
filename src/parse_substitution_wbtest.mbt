@@ -102,7 +102,7 @@ test "recursive substitution" {
 }
 
 ///|
-test "var without paranthesis subbed before separators" {
+test "var without parenthesis subbed before separators" {
   assert_str(
     (
       #|KEY1=test_user
