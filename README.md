@@ -53,7 +53,7 @@ The simplest way to use `dotenv-mbt` is with the `EnvLoader`:
 ```moonbit
 fn main {
   let env_map = @dotenv.EnvLoader::new?().unwrap().load?().unwrap()
-  let host = env_map.var?("HOST").unwrap()
+  let host = env_map.get("HOST").unwrap()
   println("HOST=\{host}")
 }
 ```
@@ -74,19 +74,22 @@ let loader2 = @dotenv.EnvLoader::new?().unwrap()
 
 ### **🔄 Variable Access**
 
-After loading the environment, you can access variables using the `var` method:
+After loading the environment, you can access variables using the `get` method:
 
 ```moonbit
 let env_map = @dotenv.EnvLoader::new?().unwrap().load?().unwrap()
 
-// Get a variable (returns Result)
-let host = env_map.var?("HOST").unwrap()
+// Get a variable (returns Option)
+let host = env_map.get("HOST").unwrap()
 
 // Get with default value if not found
-let port = env_map.var?("PORT").or("8080")
+let port = match env_map.get("PORT") {
+  Some(p) => p
+  None => "8080"
+}
 
 // Check if a variable exists
-if env_map.var?("DATABASE_URL").is_ok() {
+if env_map.get("DATABASE_URL").is_some() {
   // Do something with database URL
 }
 ```
@@ -133,14 +136,17 @@ fn main {
   let env = @dotenv.EnvLoader::new?().unwrap().load?().unwrap()
 
   // Access variables
-  let host = env.var?("HOST").unwrap()
-  let port = env.var?("PORT").or("8080") // Default to 8080 if not set
+  let host = env.get("HOST").unwrap()
+  let port = match env.get("PORT") {
+    Some(p) => p
+    None => "8080"  // Default to 8080 if not set
+  }
 
   // Use variables in your application
   println("Server running at \{host}:\{port}")
 
   // Check if a variable exists
-  if env.var?("DEBUG").is_ok() {
+  if env.get("DEBUG").is_some() {
     println("Debug mode enabled")
   }
 }

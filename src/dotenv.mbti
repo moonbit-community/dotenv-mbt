@@ -1,37 +1,39 @@
+// Generated using `moon info`, DON'T EDIT IT
 package "ShellWen/dotenv"
 
 // Values
-fn load(path~ : String = .., ignore_file_not_found~ : Bool = ..) -> EnvMap!DotenvError
+fn load(path? : String, ignore_file_not_found? : Bool) -> EnvMap raise DotenvError
 
-fn load_and_modify(path~ : String = .., ignore_file_not_found~ : Bool = ..) -> EnvMap!DotenvError
+fn load_and_modify(path? : String, ignore_file_not_found? : Bool) -> EnvMap raise DotenvError
 
-fn temp_env[R, E : Error](Map[String, String], () -> R!E) -> R!E
+fn[R, E : Error] temp_env(Map[String, String], () -> R raise E) -> R raise E
 
-// Types and methods
-pub type! DotenvError {
+// Errors
+pub suberror DotenvError {
   FileNotFound(String)
   LineParseError(String, UInt)
   Io(Error, String)
   InvalidOp
 }
 
+pub suberror ParseBufError {
+  LineParse(String, UInt)
+}
+
+// Types and methods
 pub struct EnvLoader {
   mut path : String?
   // private fields
 }
-impl EnvLoader {
-  from_path(String) -> Self!DotenvError
-  from_string(String) -> Self
-  load(Self) -> EnvMap!DotenvError
-  load_and_modify(Self) -> EnvMap!DotenvError
-  set_path(Self, String?) -> Self
-  set_sequence(Self, EnvSequence) -> Self
-}
+fn EnvLoader::from_path(String) -> Self raise DotenvError
+fn EnvLoader::from_string(String) -> Self
+fn EnvLoader::load(Self) -> EnvMap raise DotenvError
+fn EnvLoader::load_and_modify(Self) -> EnvMap raise DotenvError
+fn EnvLoader::set_path(Self, String?) -> Self
+fn EnvLoader::set_sequence(Self, EnvSequence) -> Self
 
 type EnvMap
-impl EnvMap {
-  var(Self, String) -> String?
-}
+fn EnvMap::get(Self, String) -> String?
 
 pub(all) enum EnvSequence {
   EnvOnly
@@ -40,10 +42,6 @@ pub(all) enum EnvSequence {
   InputThenEnv
 }
 impl Default for EnvSequence
-
-pub type! ParseBufError {
-  LineParse(String, UInt)
-}
 
 // Type aliases
 

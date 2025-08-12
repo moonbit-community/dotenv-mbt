@@ -35,7 +35,7 @@ fn Cursor::read_line(self : Cursor) -> String {
       result.write_char('\n')
       break
     }
-    result.write_char(Char::from_int(byte))
+    result.write_char(byte.unsafe_to_char())
   }
   // Convert the result to a string
   result.to_string()
@@ -51,7 +51,7 @@ fn Cursor::next(self : Cursor) -> Int? {
   if self.pos >= self.data.length().to_uint64() {
     None
   } else {
-    let char = self.data.charcode_at(self.pos.to_int())
+    let char = self.data[self.pos.to_int()]
     self.pos += 1
     Some(char)
   }
@@ -62,7 +62,7 @@ fn Cursor::peek(self : Cursor) -> Int? {
   if self.pos >= self.data.length().to_uint64() {
     None
   } else {
-    Some(self.data.charcode_at(self.pos.to_int()))
+    Some(self.data[self.pos.to_int()])
   }
 }
 

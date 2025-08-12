@@ -1,5 +1,5 @@
 ///|
-pub type! DotenvError {
+pub suberror DotenvError {
   /// When the file is not found.
   FileNotFound(String)
   LineParseError(String, UInt)

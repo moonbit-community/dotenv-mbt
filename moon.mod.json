@@ -2,7 +2,7 @@
   "name": "ShellWen/dotenv",
   "version": "0.4.0",
   "deps": {
-    "moonbitlang/x": "0.4.25"
+    "moonbitlang/x": "0.4.32"
   },
   "readme": "README.md",
   "repository": "https://github.com/moonbit-community/dotenv-mbt.git",

@@ -13,8 +13,8 @@ fn DotenvIter::new(data : String) -> DotenvIter {
 ///|
 fn DotenvIter::internal_load(
   self : DotenvIter,
-  load_fn : (String, String, EnvMap) -> Unit
-) -> EnvMap!ParseBufError {
+  load_fn : (String, String, EnvMap) -> Unit,
+) -> EnvMap raise ParseBufError {
   self.remove_bom()
   let map = EnvMap::new()
   for {
@@ -22,7 +22,7 @@ fn DotenvIter::internal_load(
     if item.is_empty() {
       break
     }
-    let item = item.unwrap().unwrap_or_error!()
+    let item = item.unwrap().unwrap_or_error()
     let (k, v) = item
     load_fn(k, v, map)
   }
@@ -30,15 +30,15 @@ fn DotenvIter::internal_load(
 }
 
 ///|
-fn DotenvIter::load(self : DotenvIter) -> EnvMap!ParseBufError {
-  self.internal_load!(fn(k, v, map) { map.map[k] = v })
+fn DotenvIter::load(self : DotenvIter) -> EnvMap raise ParseBufError {
+  self.internal_load(fn(k, v, map) { map.map[k] = v })
 }
 
 ///|
-fn DotenvIter::load_and_modify(self : DotenvIter) -> EnvMap!ParseBufError {
+fn DotenvIter::load_and_modify(self : DotenvIter) -> EnvMap raise ParseBufError {
   // Not thread-safe
   let vars = @sys.get_env_vars()
-  self.internal_load!(fn(k, v, map) {
+  self.internal_load(fn(k, v, map) {
     if not(vars.contains(k)) {
       @sys.set_env_var(k, v)
     }
@@ -48,9 +48,9 @@ fn DotenvIter::load_and_modify(self : DotenvIter) -> EnvMap!ParseBufError {
 
 ///|
 fn DotenvIter::load_and_modify_override(
-  self : DotenvIter
-) -> EnvMap!ParseBufError {
-  self.internal_load!(fn(k, v, map) {
+  self : DotenvIter,
+) -> EnvMap raise ParseBufError {
+  self.internal_load(fn(k, v, map) {
     @sys.set_env_var(k, v)
     map.map[k] = v
   })
@@ -62,17 +62,12 @@ fn DotenvIter::load_and_modify_override(
 fn DotenvIter::remove_bom(self : DotenvIter) -> Unit {
   guard self.cursor.length() >= 3 else { return }
   let origin_pos = self.cursor.pos()
-  let bom : FixedArray[Byte] = [0xEF, 0xBB, 0xBF]
-  let start : FixedArray[Byte] = FixedArray::makei(3, fn(_) -> Byte {
-    self.cursor.next().or(0).to_byte()
-  })
-  if start == bom {
-    // The BOM is present, so we skip it
-    self.cursor.set_pos(origin_pos + 3)
-  } else {
-    // The BOM is not present, so we reset the cursor position
-    self.cursor.set_pos(origin_pos)
+  if self.cursor.next() is Some(0xfeff) {
+    // The BOM is present, so exit early
+    return
   }
+  // The BOM is not present, so we reset the cursor position
+  self.cursor.set_pos(origin_pos)
 }
 
 ///|
@@ -85,7 +80,7 @@ priv enum ParseState {
   WeakOpenEscape
   Comment
   WhiteSpace
-} derive(Eq, Show)
+} derive(Eq)
 
 ///|
 fn ParseState::eval_end(self : ParseState, buf : String) -> (UInt, ParseState) {
@@ -135,7 +130,7 @@ fn ParseState::eval_end(self : ParseState, buf : String) -> (UInt, ParseState) {
 
 ///|
 fn DotenvIter::next(
-  self : DotenvIter
+  self : DotenvIter,
 ) -> Result[(String, String), ParseBufError]? {
   for {
     let line = match self.cursor.next_line() {
@@ -143,7 +138,7 @@ fn DotenvIter::next(
       Some(Err(e)) => return Some(Err(e))
       None => return None
     }
-    match parse_line?(line, self.substitution_data) {
+    match (try? parse_line(line, self.substitution_data)) {
       Ok(Some(res)) => return Some(Ok(res))
       Ok(None) => continue
       Err(e) => return Some(Err(e))
@@ -152,6 +147,6 @@ fn DotenvIter::next(
 }
 
 ///|
-pub type! ParseBufError {
+pub suberror ParseBufError {
   LineParse(String, UInt)
 }

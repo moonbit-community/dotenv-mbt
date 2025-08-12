@@ -4,9 +4,10 @@
 test "should not parse unfinished subs" {
   let invalid_value = ">${baz{<"
   let iter = DotenvIter::new(
-    #|FOO=bar
-    #|BAR={invalid_value}
-    .replace(old="{invalid_value}", new=invalid_value),
+    (
+      #|FOO=bar
+      #|BAR={invalid_value}
+    ).replace(old="{invalid_value}", new=invalid_value),
   )
   let parsed : Array[Result[(String, String), ParseBufError]] = Array::new()
   for {
@@ -17,7 +18,7 @@ test "should not parse unfinished subs" {
   }
 
   // first line works
-  assert_eq!(parsed[0].unwrap(), ("FOO", "bar"))
+  assert_eq(parsed[0].unwrap(), ("FOO", "bar"))
   // second line error
   match parsed[1] {
     Err(ParseBufError::LineParse(v, idx)) if v == invalid_value &&
@@ -73,7 +74,7 @@ test "should not parse invalid escape" {
   }
   match parsed[0] {
     Err(ParseBufError::LineParse(v, idx)) if v == invalid_esc &&
-      idx == (invalid_esc.index_of("\\") + 1).reinterpret_as_uint() => ()
+      idx == (invalid_esc.find("\\").unwrap() + 1).reinterpret_as_uint() => ()
     _ => abort("Expected error for invalid escape")
   }
 }

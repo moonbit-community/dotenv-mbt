@@ -1,10 +1,10 @@
 ///|
 fn parse_line(
   line : String,
-  substitution_data : @hashmap.T[String, String?]
-) -> (String, String)?!ParseBufError {
+  substitution_data : @hashmap.T[String, String?],
+) -> (String, String)? raise ParseBufError {
   let parser = LineParser::new(line, substitution_data)
-  parser.parse_line!()
+  parser.parse_line()
 }
 
 ///|
@@ -18,7 +18,7 @@ priv struct LineParser {
 ///|
 fn LineParser::new(
   line : String,
-  substitution_data : @hashmap.T[String, String?]
+  substitution_data : @hashmap.T[String, String?],
 ) -> LineParser {
   {
     original_line: line,
@@ -34,49 +34,51 @@ fn LineParser::err(self : LineParser) -> ParseBufError {
 }
 
 ///|
-fn LineParser::parse_line(self : LineParser) -> (String, String)?!ParseBufError {
+fn LineParser::parse_line(
+  self : LineParser,
+) -> (String, String)? raise ParseBufError {
   self.skip_whitespace()
   // if its an empty line or a comment, skip it
-  if self.line.is_empty() || self.line.starts_with("#") {
+  if self.line.is_empty() || self.line.strip_prefix("#") is Some(_) {
     return None
   }
-  let mut key = self.parse_key!()
+  let mut key = self.parse_key()
   self.skip_whitespace()
 
   // export can be either an optional prefix or a key itself
   if key == "export" {
     // here we check for an optional `=`, below we throw directly when it’s not found.
     if self.expect_equal().is_err() {
-      key = self.parse_key!()
+      key = self.parse_key()
       self.skip_whitespace()
-      self.expect_equal().unwrap_or_error!()
+      self.expect_equal().unwrap_or_error()
     }
   } else {
-    self.expect_equal().unwrap_or_error!()
+    self.expect_equal().unwrap_or_error()
   }
   self.skip_whitespace()
-  if self.line.is_empty() || self.line.starts_with("#") {
+  if self.line.is_empty() || self.line.strip_prefix("#") is Some(_) {
     self.substitution_data[key] = None
     return Some((key, ""))
   }
-  let parsed_value = parse_value!(self.line, self.substitution_data)
+  let parsed_value = parse_value(self.line, self.substitution_data)
   self.substitution_data[key] = Some(parsed_value)
   Some((key, parsed_value))
 }
 
 ///|
-fn LineParser::parse_key(self : LineParser) -> String!ParseBufError {
+fn LineParser::parse_key(self : LineParser) -> String raise ParseBufError {
   fn string_starts_with(src : String, predicate : (Char) -> Bool) -> Bool {
     if src.length() == 0 {
       return false
     }
-    predicate(src[0])
+    predicate(src.get_char(0).unwrap())
   }
 
   fn string_find(src : String, predicate : (Char) -> Bool) -> UInt? {
     let mut index = 0U
     while index < src.length().reinterpret_as_uint() {
-      if predicate(src[index.reinterpret_as_int()]) {
+      if predicate(src.get_char(index.reinterpret_as_int()).unwrap()) {
         return Some(index)
       }
       index += 1
@@ -106,7 +108,7 @@ fn LineParser::parse_key(self : LineParser) -> String!ParseBufError {
 
 ///|
 fn LineParser::expect_equal(self : LineParser) -> Result[Unit, ParseBufError] {
-  if not(self.line.starts_with("=")) {
+  if not(self.line.strip_prefix("=") is Some(_)) {
     return Err(self.err())
   }
   self.line = self.line.substring(start=1)
@@ -118,7 +120,7 @@ fn LineParser::expect_equal(self : LineParser) -> Result[Unit, ParseBufError] {
 fn LineParser::skip_whitespace(self : LineParser) -> Unit {
   let mut first_space = 0
   while first_space < self.line.length() {
-    if not(self.line[first_space].is_whitespace()) {
+    if not(self.line.get_char(first_space).unwrap().is_whitespace()) {
       break
     }
     first_space += 1
@@ -140,8 +142,8 @@ priv enum SubstitutionMode {
 ///|
 fn parse_value(
   input : String,
-  substitution_data : @hashmap.T[String, String?]
-) -> String!ParseBufError {
+  substitution_data : @hashmap.T[String, String?],
+) -> String raise ParseBufError {
   // '
   let mut strong_quote = false
   // "
@@ -275,13 +277,13 @@ fn parse_value(
 fn apply_substitution(
   substitution_data : @hashmap.T[String, String?],
   substitution_name : String,
-  output : StringBuilder
+  output : StringBuilder,
 ) -> Unit {
   let env_vars = @sys.get_env_vars()
   if env_vars.contains(substitution_name) {
-    output.write_string(env_vars[substitution_name].unwrap())
+    output.write_string(env_vars.get(substitution_name).unwrap())
   } else {
-    let stored_value = substitution_data[substitution_name].or(None)
-    output.write_string(stored_value.or_default())
+    let stored_value = substitution_data.get(substitution_name).unwrap_or(None)
+    output.write_string(stored_value.unwrap_or_default())
   }
 }
