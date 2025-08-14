@@ -39,7 +39,7 @@ fn LineParser::parse_line(
 ) -> (String, String)? raise ParseBufError {
   self.skip_whitespace()
   // if its an empty line or a comment, skip it
-  if self.line.is_empty() || self.line.strip_prefix("#") is Some(_) {
+  if self.line.is_empty() || self.line.has_prefix("#") {
     return None
   }
   let mut key = self.parse_key()
@@ -57,7 +57,7 @@ fn LineParser::parse_line(
     self.expect_equal().unwrap_or_error()
   }
   self.skip_whitespace()
-  if self.line.is_empty() || self.line.strip_prefix("#") is Some(_) {
+  if self.line.is_empty() || self.line.has_prefix("#") {
     self.substitution_data[key] = None
     return Some((key, ""))
   }
@@ -108,7 +108,7 @@ fn LineParser::parse_key(self : LineParser) -> String raise ParseBufError {
 
 ///|
 fn LineParser::expect_equal(self : LineParser) -> Result[Unit, ParseBufError] {
-  if not(self.line.strip_prefix("=") is Some(_)) {
+  if not(self.line.has_prefix("=")) {
     return Err(self.err())
   }
   self.line = self.line.substring(start=1)
