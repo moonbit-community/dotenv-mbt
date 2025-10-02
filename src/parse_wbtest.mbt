@@ -74,7 +74,7 @@ test "parse line invalid" {
     match actual_iter.next() {
       Some(i) => {
         count += 1
-        assert_true(i.is_err())
+        assert_true(i is Err(_))
       }
       None => break
     }
@@ -127,7 +127,7 @@ test "parse value escapes invalid" {
   )
   for {
     match actual_iter.next() {
-      Some(i) => assert_true(i.is_err())
+      Some(i) => assert_true(i is Err(_))
       None => break
     }
   }

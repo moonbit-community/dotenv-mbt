@@ -1,7 +1,7 @@
 ///|
 fn parse_line(
   line : String,
-  substitution_data : @hashmap.T[String, String?],
+  substitution_data : @hashmap.HashMap[String, String?],
 ) -> (String, String)? raise ParseBufError {
   let parser = LineParser::new(line, substitution_data)
   parser.parse_line()
@@ -10,7 +10,7 @@ fn parse_line(
 ///|
 priv struct LineParser {
   original_line : String
-  substitution_data : @hashmap.T[String, String?]
+  substitution_data : @hashmap.HashMap[String, String?]
   mut line : String
   mut pos : UInt
 }
@@ -18,7 +18,7 @@ priv struct LineParser {
 ///|
 fn LineParser::new(
   line : String,
-  substitution_data : @hashmap.T[String, String?],
+  substitution_data : @hashmap.HashMap[String, String?],
 ) -> LineParser {
   {
     original_line: line,
@@ -48,7 +48,7 @@ fn LineParser::parse_line(
   // export can be either an optional prefix or a key itself
   if key == "export" {
     // here we check for an optional `=`, below we throw directly when it’s not found.
-    if self.expect_equal().is_err() {
+    if self.expect_equal() is Err(_) {
       key = self.parse_key()
       self.skip_whitespace()
       self.expect_equal().unwrap_or_error()
@@ -101,23 +101,23 @@ fn LineParser::parse_key(self : LineParser) -> String raise ParseBufError {
     None => self.line.length().reinterpret_as_uint()
   }
   self.pos += index
-  let key = self.line.substring(start=0, end=index.reinterpret_as_int())
-  self.line = self.line.substring(start=index.reinterpret_as_int())
+  let key = (try? self.line[0:index.reinterpret_as_int()].to_string()).map_err(fn(_) { self.err() }).unwrap_or_error()
+  self.line = (try? self.line[index.reinterpret_as_int():].to_string()).map_err(fn(_) { self.err() }).unwrap_or_error()
   key
 }
 
 ///|
-fn LineParser::expect_equal(self : LineParser) -> Result[Unit, ParseBufError] {
+fn LineParser::expect_equal(self : LineParser) -> Result[Unit, ParseBufError] raise ParseBufError {
   if not(self.line.strip_prefix("=") is Some(_)) {
     return Err(self.err())
   }
-  self.line = self.line.substring(start=1)
+  self.line = (try? self.line[1:].to_string()).map_err(fn(_) { self.err() }).unwrap_or_error()
   self.pos += 1
   Ok(())
 }
 
 ///|
-fn LineParser::skip_whitespace(self : LineParser) -> Unit {
+fn LineParser::skip_whitespace(self : LineParser) -> Unit raise ParseBufError {
   let mut first_space = 0
   while first_space < self.line.length() {
     if not(self.line.get_char(first_space).unwrap().is_whitespace()) {
@@ -128,7 +128,7 @@ fn LineParser::skip_whitespace(self : LineParser) -> Unit {
   if first_space == self.line.length() {
     self.line = ""
   } else {
-    self.line = self.line.substring(start=first_space)
+    self.line = (try? self.line[first_space:].to_string()).map_err(fn(_) { self.err() }).unwrap_or_error()
   }
 }
 
@@ -142,7 +142,7 @@ priv enum SubstitutionMode {
 ///|
 fn parse_value(
   input : String,
-  substitution_data : @hashmap.T[String, String?],
+  substitution_data : @hashmap.HashMap[String, String?],
 ) -> String raise ParseBufError {
   // '
   let mut strong_quote = false
@@ -275,7 +275,7 @@ fn parse_value(
 
 ///|
 fn apply_substitution(
-  substitution_data : @hashmap.T[String, String?],
+  substitution_data : @hashmap.HashMap[String, String?],
   substitution_name : String,
   output : StringBuilder,
 ) -> Unit {

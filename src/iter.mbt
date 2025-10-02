@@ -1,7 +1,7 @@
 ///|
 priv struct DotenvIter {
   cursor : Cursor
-  substitution_data : @hashmap.T[String, String?]
+  substitution_data : @hashmap.HashMap[String, String?]
 }
 
 ///|

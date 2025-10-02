@@ -1,7 +1,7 @@
 ///|
 struct EnvMap {
   /// The map of environment variables.
-  map : @hashmap.T[String, String]
+  map : @hashmap.HashMap[String, String]
 }
 
 ///|
@@ -116,7 +116,7 @@ fn EnvLoader::load_input_and_modify_override(
 }
 
 ///|
-fn env_vars() -> @hashmap.T[String, String] {
+fn env_vars() -> @hashmap.HashMap[String, String] {
   let vars = @sys.get_env_vars()
   @hashmap.from_iter(vars.iter())
 }
