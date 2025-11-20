@@ -1,4 +1,5 @@
-///| This function is for testing only.
+///|
+/// This function is for testing only.
 /// Do not use this in production code.
 /// It is not thread-safe.
 pub fn[R, E : Error] temp_env(

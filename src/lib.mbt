@@ -51,7 +51,8 @@ pub fn EnvLoader::from_string(str : String) -> EnvLoader {
   { path: None, str, sequence: EnvSequence::default() }
 }
 
-///| Sets the path to the specified path.
+///|
+/// Sets the path to the specified path.
 ///
 /// This is useful when constructing with a reader, but still desiring a path to be used in the error message context.
 ///
@@ -61,7 +62,8 @@ pub fn EnvLoader::set_path(self : EnvLoader, path : String?) -> EnvLoader {
   self
 }
 
-///| Sets the sequence in which to load environment variables.
+///|
+/// Sets the sequence in which to load environment variables.
 pub fn EnvLoader::set_sequence(
   self : EnvLoader,
   sequence : EnvSequence,
@@ -121,7 +123,8 @@ fn env_vars() -> @hashmap.HashMap[String, String] {
   @hashmap.from_iter(vars.iter())
 }
 
-///| Loads environment variables into a hash map.
+///|
+/// Loads environment variables into a hash map.
 ///
 /// This is the primary method for loading environment variables.
 pub fn EnvLoader::load(self : EnvLoader) -> EnvMap raise DotenvError {
@@ -143,10 +146,11 @@ pub fn EnvLoader::load(self : EnvLoader) -> EnvMap raise DotenvError {
   }
 }
 
-///| Shortcut for loading environment variables from a file.
+///|
+/// Shortcut for loading environment variables from a file.
 pub fn load(
-  path~ : String = "./.env",
-  ignore_file_not_found~ : Bool = true,
+  path? : String = "./.env",
+  ignore_file_not_found? : Bool = true,
 ) -> EnvMap raise DotenvError {
   if @fs.path_exists(path) && (try? @fs.is_file(path)).or(false) {
     EnvLoader::from_path(path).load()
@@ -157,7 +161,8 @@ pub fn load(
   }
 }
 
-///| Loads environment variables into a hash map, modifying the existing environment.
+///|
+/// Loads environment variables into a hash map, modifying the existing environment.
 ///
 /// This calls `@sys.set_env_var` internally.
 pub fn EnvLoader::load_and_modify(self : EnvLoader) -> EnvMap raise DotenvError {
@@ -184,10 +189,11 @@ pub fn EnvLoader::load_and_modify(self : EnvLoader) -> EnvMap raise DotenvError 
   }
 }
 
-///| Shortcut for loading environment variables from a file and modifying the existing environment.
+///|
+/// Shortcut for loading environment variables from a file and modifying the existing environment.
 pub fn load_and_modify(
-  path~ : String = "./.env",
-  ignore_file_not_found~ : Bool = true,
+  path? : String = "./.env",
+  ignore_file_not_found? : Bool = true,
 ) -> EnvMap raise DotenvError {
   if @fs.path_exists(path) && (try? @fs.is_file(path)).or(false) {
     EnvLoader::from_path(path).load_and_modify()
