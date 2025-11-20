@@ -12,7 +12,7 @@ fn Cursor::new(data : String) -> Cursor {
 
 ///|
 fn Cursor::read_line(self : Cursor) -> String {
-  if self.peek().is_empty() {
+  if self.peek() is None {
     return ""
   }
   let result = StringBuilder::new()
@@ -114,7 +114,7 @@ fn Cursor::next_line(self : Cursor) -> Result[String, ParseBufError]? {
               return Some(
                 Ok(
                   // TODO: Performance optimization
-                  buf.trim_end("\n").trim_end("\r").to_string(),
+                  buf.trim_end(chars="\n").trim_end(chars="\r").to_string(),
                 ),
               )
             ParseState::Escape

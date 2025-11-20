@@ -19,7 +19,7 @@ fn DotenvIter::internal_load(
   let map = EnvMap::new()
   for {
     let item = self.next()
-    if item.is_empty() {
+    if item is None {
       break
     }
     let item = item.unwrap().unwrap_or_error()
@@ -56,7 +56,8 @@ fn DotenvIter::load_and_modify_override(
   })
 }
 
-///| Removes the BOM if it exists.
+///|
+/// Removes the BOM if it exists.
 ///
 /// For more info, see the [Unicode BOM character](https://www.compart.com/en/unicode/U+FEFF).
 fn DotenvIter::remove_bom(self : DotenvIter) -> Unit {
@@ -138,10 +139,14 @@ fn DotenvIter::next(
       Some(Err(e)) => return Some(Err(e))
       None => return None
     }
-    match (try? parse_line(line, self.substitution_data)) {
-      Ok(Some(res)) => return Some(Ok(res))
-      Ok(None) => continue
-      Err(e) => return Some(Err(e))
+    try parse_line(line, self.substitution_data) catch {
+      e => return Some(Err(e))
+    } noraise {
+      res =>
+        match res {
+          Some(res) => return Some(Ok(res))
+          None => continue
+        }
     }
   }
 }
