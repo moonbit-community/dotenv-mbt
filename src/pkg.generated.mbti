@@ -2,11 +2,11 @@
 package "ShellWen/dotenv"
 
 // Values
-fn load(path? : String, ignore_file_not_found? : Bool) -> EnvMap raise DotenvError
+pub fn load(path? : String, ignore_file_not_found? : Bool) -> EnvMap raise DotenvError
 
-fn load_and_modify(path? : String, ignore_file_not_found? : Bool) -> EnvMap raise DotenvError
+pub fn load_and_modify(path? : String, ignore_file_not_found? : Bool) -> EnvMap raise DotenvError
 
-fn[R, E : Error] temp_env(Map[String, String], () -> R raise E) -> R raise E
+pub fn[R, E : Error] temp_env(Map[String, String], () -> R raise E) -> R raise E
 
 // Errors
 pub suberror DotenvError {
@@ -25,15 +25,15 @@ pub struct EnvLoader {
   mut path : String?
   // private fields
 }
-fn EnvLoader::from_path(String) -> Self raise DotenvError
-fn EnvLoader::from_string(String) -> Self
-fn EnvLoader::load(Self) -> EnvMap raise DotenvError
-fn EnvLoader::load_and_modify(Self) -> EnvMap raise DotenvError
-fn EnvLoader::set_path(Self, String?) -> Self
-fn EnvLoader::set_sequence(Self, EnvSequence) -> Self
+pub fn EnvLoader::from_path(String) -> Self raise DotenvError
+pub fn EnvLoader::from_string(String) -> Self
+pub fn EnvLoader::load(Self) -> EnvMap raise DotenvError
+pub fn EnvLoader::load_and_modify(Self) -> EnvMap raise DotenvError
+pub fn EnvLoader::set_path(Self, String?) -> Self
+pub fn EnvLoader::set_sequence(Self, EnvSequence) -> Self
 
 type EnvMap
-fn EnvMap::get(Self, String) -> String?
+pub fn EnvMap::get(Self, String) -> String?
 
 pub(all) enum EnvSequence {
   EnvOnly
@@ -41,7 +41,7 @@ pub(all) enum EnvSequence {
   InputOnly
   InputThenEnv
 }
-impl Default for EnvSequence
+pub impl Default for EnvSequence
 
 // Type aliases
 
