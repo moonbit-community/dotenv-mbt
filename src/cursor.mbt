@@ -21,14 +21,14 @@ fn Cursor::read_line(self : Cursor) -> String {
       result.write_char('\n')
       break
     }
-    if byte == '\n'.to_int() {
+    if byte == 0x0a {
       result.write_char('\n')
       break
     }
-    if byte == '\r'.to_int() {
+    if byte == 0x0d {
       // Check if the next byte is a newline(CRLF)
       let next = self.peek()
-      if next == Some('\n') {
+      if next == Some(0x0a) {
         // Skip the newline byte
         ignore(self.next())
       }
@@ -47,22 +47,22 @@ fn Cursor::length(self : Cursor) -> UInt64 {
 }
 
 ///|
-fn Cursor::next(self : Cursor) -> Int? {
+fn Cursor::next(self : Cursor) -> UInt16? {
   if self.pos >= self.data.length().to_uint64() {
     None
   } else {
-    let char = self.data[self.pos.to_int()]
+    let char = self.data.code_unit_at(self.pos.to_int())
     self.pos += 1
     Some(char)
   }
 }
 
 ///|
-fn Cursor::peek(self : Cursor) -> Int? {
+fn Cursor::peek(self : Cursor) -> UInt16? {
   if self.pos >= self.data.length().to_uint64() {
     None
   } else {
-    Some(self.data[self.pos.to_int()])
+    Some(self.data.code_unit_at(self.pos.to_int()))
   }
 }
 
