@@ -100,31 +100,25 @@ fn LineParser::parse_key(self : LineParser) -> String raise ParseBufError {
     None => self.line.length().reinterpret_as_uint()
   }
   self.pos += index
-  let key = (try? self.line[0:index.reinterpret_as_int()].to_string())
-    .map_err(fn(_) { self.err() })
-    .unwrap_or_error()
-  self.line = (try? self.line[index.reinterpret_as_int():].to_string())
-    .map_err(fn(_) { self.err() })
-    .unwrap_or_error()
+  let key = self.line[0:index.reinterpret_as_int()].to_string()
+  self.line = self.line[index.reinterpret_as_int():].to_string()
   key
 }
 
 ///|
 fn LineParser::expect_equal(
   self : LineParser,
-) -> Result[Unit, ParseBufError] raise ParseBufError {
+) -> Result[Unit, ParseBufError] {
   if !(self.line.strip_prefix("=") is Some(_)) {
     return Err(self.err())
   }
-  self.line = (try? self.line[1:].to_string())
-    .map_err(fn(_) { self.err() })
-    .unwrap_or_error()
+  self.line = self.line[1:].to_string()
   self.pos += 1
   Ok(())
 }
 
 ///|
-fn LineParser::skip_whitespace(self : LineParser) -> Unit raise ParseBufError {
+fn LineParser::skip_whitespace(self : LineParser) -> Unit {
   let mut first_space = 0
   while first_space < self.line.length() {
     if !self.line.get_char(first_space).unwrap().is_whitespace() {
@@ -135,9 +129,7 @@ fn LineParser::skip_whitespace(self : LineParser) -> Unit raise ParseBufError {
   if first_space == self.line.length() {
     self.line = ""
   } else {
-    self.line = (try? self.line[first_space:].to_string())
-      .map_err(fn(_) { self.err() })
-      .unwrap_or_error()
+    self.line = self.line[first_space:].to_string()
   }
 }
 
