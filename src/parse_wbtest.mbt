@@ -34,7 +34,7 @@ test "parse line env" {
     ("SHELL_LOVER", "1"),
   ]
   let actual_parsed = []
-  for {
+  for ;; {
     match actual_iter.next() {
       Some(i) => actual_parsed.push(i.unwrap_or_error())
       None => break
@@ -50,7 +50,7 @@ test "parse line comment" {
     #|#    
   let result = DotenvIter::new(input)
   let parsed = []
-  for {
+  for ;; {
     match result.next() {
       Some(i) => parsed.push(i.unwrap_or_error())
       None => break
@@ -70,7 +70,7 @@ test "parse line invalid" {
     ),
   )
   let mut count = 0
-  for {
+  for ;; {
     match actual_iter.next() {
       Some(i) => {
         count += 1
@@ -105,7 +105,7 @@ test "parse value escapes" {
     ("KEY7", "line 1\nline 2"),
   ]
   let actual_parsed = []
-  for {
+  for ;; {
     match actual_iter.next() {
       Some(i) => actual_parsed.push(i.unwrap_or_error())
       None => break
@@ -125,7 +125,7 @@ test "parse value escapes invalid" {
       #|
     ),
   )
-  for {
+  for ;; {
     match actual_iter.next() {
       Some(i) => assert_true(i is Err(_))
       None => break

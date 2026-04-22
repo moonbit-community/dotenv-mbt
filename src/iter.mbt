@@ -17,7 +17,7 @@ fn DotenvIter::internal_load(
 ) -> EnvMap raise ParseBufError {
   self.remove_bom()
   let map = EnvMap::new()
-  for {
+  for ;; {
     let item = self.next()
     if item is None {
       break
@@ -133,7 +133,7 @@ fn ParseState::eval_end(self : ParseState, buf : String) -> (UInt, ParseState) {
 fn DotenvIter::next(
   self : DotenvIter,
 ) -> Result[(String, String), ParseBufError]? {
-  for {
+  for ;; {
     let line = match self.cursor.next_line() {
       Some(Ok(line)) => line
       Some(Err(e)) => return Some(Err(e))
