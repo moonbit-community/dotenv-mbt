@@ -1,3 +1,7 @@
 {
-  "import": ["moonbitlang/x/fs", "moonbitlang/x/sys"]
+  "import": [
+    "moonbitlang/core/hashmap",
+    "moonbitlang/x/fs",
+    "moonbitlang/x/sys"
+  ]
 }
