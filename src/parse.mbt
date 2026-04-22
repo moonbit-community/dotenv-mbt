@@ -23,7 +23,7 @@ fn LineParser::new(
   {
     original_line: line,
     substitution_data,
-    line: line.trim_space().to_string(), // we don’t want trailing whitespace
+    line: line.trim().to_string(), // we don’t want trailing whitespace
     pos: 0,
   }
 }
@@ -86,16 +86,15 @@ fn LineParser::parse_key(self : LineParser) -> String raise ParseBufError {
     None
   }
 
-  if not(
-      string_starts_with(self.line, fn(c) {
-        c.is_ascii_alphabetic() || c == '_'
-      }),
+  if !string_starts_with(
+      self.line,
+      fn(c) { c.is_ascii_alphabetic() || c == '_' },
     ) {
     raise self.err()
   }
   let index = match
     string_find(self.line, fn(c) {
-      not(c.is_ascii_alphabetic() || c.is_numeric() || c == '_' || c == '.')
+      !(c.is_ascii_alphabetic() || c.is_numeric() || c == '_' || c == '.')
     }) {
     Some(index) => index
     None => self.line.length().reinterpret_as_uint()
@@ -114,7 +113,7 @@ fn LineParser::parse_key(self : LineParser) -> String raise ParseBufError {
 fn LineParser::expect_equal(
   self : LineParser,
 ) -> Result[Unit, ParseBufError] raise ParseBufError {
-  if not(self.line.strip_prefix("=") is Some(_)) {
+  if !(self.line.strip_prefix("=") is Some(_)) {
     return Err(self.err())
   }
   self.line = (try? self.line[1:].to_string())
@@ -128,7 +127,7 @@ fn LineParser::expect_equal(
 fn LineParser::skip_whitespace(self : LineParser) -> Unit raise ParseBufError {
   let mut first_space = 0
   while first_space < self.line.length() {
-    if not(self.line.get_char(first_space).unwrap().is_whitespace()) {
+    if !self.line.get_char(first_space).unwrap().is_whitespace() {
       break
     }
     first_space += 1
@@ -212,7 +211,7 @@ fn parse_value(
               )
               substitution_name.reset()
               if c == '$' {
-                substitution_mode = if not(strong_quote) && not(escaped) {
+                substitution_mode = if !strong_quote && !escaped {
                   SubstitutionMode::Block
                 } else {
                   SubstitutionMode::None
@@ -237,7 +236,7 @@ fn parse_value(
         }
       }
     } else if c == '$' {
-      substitution_mode = if not(strong_quote) && not(escaped) {
+      substitution_mode = if !strong_quote && !escaped {
         SubstitutionMode::Block
       } else {
         SubstitutionMode::None

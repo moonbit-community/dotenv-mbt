@@ -179,7 +179,7 @@ pub fn EnvLoader::load_and_modify(self : EnvLoader) -> EnvMap raise DotenvError 
       let existing = env_vars()
       let input = self.load_input_and_modify()
       input.map.each(fn(k, v) {
-        if not(existing.contains(k)) {
+        if !existing.contains(k) {
           @sys.set_env_var(k, v)
         }
       })

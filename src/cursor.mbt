@@ -101,7 +101,7 @@ fn Cursor::next_line(self : Cursor) -> Result[String, ParseBufError]? {
         _ => {
           // Skip lines which start with a `#` before iteration
           // This optimizes parsing a bit.
-          if buf.trim_space().to_string().has_prefix("#") {
+          if buf.trim().to_string().has_prefix("#") {
             return Some(Ok(""))
           }
           let result = cur_state.eval_end(
