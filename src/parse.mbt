@@ -86,10 +86,9 @@ fn LineParser::parse_key(self : LineParser) -> String raise ParseBufError {
     None
   }
 
-  if !string_starts_with(
-      self.line,
-      fn(c) { c.is_ascii_alphabetic() || c == '_' },
-    ) {
+  if !string_starts_with(self.line, fn(c) {
+      c.is_ascii_alphabetic() || c == '_'
+    }) {
     raise self.err()
   }
   let index = match
@@ -106,9 +105,7 @@ fn LineParser::parse_key(self : LineParser) -> String raise ParseBufError {
 }
 
 ///|
-fn LineParser::expect_equal(
-  self : LineParser,
-) -> Result[Unit, ParseBufError] {
+fn LineParser::expect_equal(self : LineParser) -> Result[Unit, ParseBufError] {
   if !(self.line.strip_prefix("=") is Some(_)) {
     return Err(self.err())
   }
