@@ -7,7 +7,7 @@ priv struct Cursor {
 
 ///|
 fn Cursor::new(data : String) -> Cursor {
-  { data, pos: 0 }
+  { data, pos: 0, }
 }
 
 ///|
@@ -15,7 +15,7 @@ fn Cursor::read_line(self : Cursor) -> String {
   if self.peek() is None {
     return ""
   }
-  let result = StringBuilder::new()
+  let result = StringBuilder()
   while true {
     guard self.next() is Some(byte) else {
       result.write_char('\n')
@@ -78,12 +78,12 @@ fn Cursor::set_pos(self : Cursor, pos : UInt64) -> Unit {
 
 ///|
 fn Cursor::next_line(self : Cursor) -> Result[String, ParseBufError]? {
-  for {
+  for ;; {
     let mut buf = ""
     let mut cur_state = ParseState::Complete
     let mut buf_pos : UInt = 0
     let mut cur_pos : UInt = 0
-    for {
+    for ;; {
       buf_pos = buf.length().reinterpret_as_uint()
       let new_line = self.read_line()
       buf = buf + new_line
@@ -101,11 +101,11 @@ fn Cursor::next_line(self : Cursor) -> Result[String, ParseBufError]? {
         _ => {
           // Skip lines which start with a `#` before iteration
           // This optimizes parsing a bit.
-          if buf.trim_space().to_string().has_prefix("#") {
+          if buf.trim().has_prefix("#") {
             return Some(Ok(""))
           }
           let result = cur_state.eval_end(
-            buf.view(start_offset=buf_pos.reinterpret_as_int()).to_string(),
+            buf.view(start_offset=buf_pos.reinterpret_as_int()).to_owned(),
           )
           cur_pos = result.0
           cur_state = result.1
@@ -114,7 +114,7 @@ fn Cursor::next_line(self : Cursor) -> Result[String, ParseBufError]? {
               return Some(
                 Ok(
                   // TODO: Performance optimization
-                  buf.trim_end(chars="\n").trim_end(chars="\r").to_string(),
+                  buf.trim_end(chars="\n").trim_end(chars="\r").to_owned(),
                 ),
               )
             ParseState::Escape
@@ -131,7 +131,7 @@ fn Cursor::next_line(self : Cursor) -> Result[String, ParseBufError]? {
                     start_offset=0,
                     end_offset=(buf_pos + cur_pos).reinterpret_as_int(),
                   )
-                  .to_string(),
+                  .to_owned(),
                 ),
               )
           }

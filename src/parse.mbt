@@ -23,7 +23,7 @@ fn LineParser::new(
   {
     original_line: line,
     substitution_data,
-    line: line.trim_space().to_string(), // we don’t want trailing whitespace
+    line: line.trim().to_owned(), // we don’t want trailing whitespace
     pos: 0,
   }
 }
@@ -86,49 +86,39 @@ fn LineParser::parse_key(self : LineParser) -> String raise ParseBufError {
     None
   }
 
-  if not(
-      string_starts_with(self.line, fn(c) {
-        c.is_ascii_alphabetic() || c == '_'
-      }),
-    ) {
+  if !string_starts_with(self.line, fn(c) {
+      c.is_ascii_alphabetic() || c == '_'
+    }) {
     raise self.err()
   }
   let index = match
     string_find(self.line, fn(c) {
-      not(c.is_ascii_alphabetic() || c.is_numeric() || c == '_' || c == '.')
+      !(c.is_ascii_alphabetic() || c.is_numeric() || c == '_' || c == '.')
     }) {
     Some(index) => index
     None => self.line.length().reinterpret_as_uint()
   }
   self.pos += index
-  let key = (try? self.line[0:index.reinterpret_as_int()].to_string())
-    .map_err(fn(_) { self.err() })
-    .unwrap_or_error()
-  self.line = (try? self.line[index.reinterpret_as_int():].to_string())
-    .map_err(fn(_) { self.err() })
-    .unwrap_or_error()
+  let key = self.line[0:index.reinterpret_as_int()].to_owned()
+  self.line = self.line[index.reinterpret_as_int():].to_owned()
   key
 }
 
 ///|
-fn LineParser::expect_equal(
-  self : LineParser,
-) -> Result[Unit, ParseBufError] raise ParseBufError {
-  if not(self.line.strip_prefix("=") is Some(_)) {
+fn LineParser::expect_equal(self : LineParser) -> Result[Unit, ParseBufError] {
+  if !(self.line.strip_prefix("=") is Some(_)) {
     return Err(self.err())
   }
-  self.line = (try? self.line[1:].to_string())
-    .map_err(fn(_) { self.err() })
-    .unwrap_or_error()
+  self.line = self.line[1:].to_owned()
   self.pos += 1
   Ok(())
 }
 
 ///|
-fn LineParser::skip_whitespace(self : LineParser) -> Unit raise ParseBufError {
+fn LineParser::skip_whitespace(self : LineParser) -> Unit {
   let mut first_space = 0
   while first_space < self.line.length() {
-    if not(self.line.get_char(first_space).unwrap().is_whitespace()) {
+    if !self.line.get_char(first_space).unwrap().is_whitespace() {
       break
     }
     first_space += 1
@@ -136,9 +126,7 @@ fn LineParser::skip_whitespace(self : LineParser) -> Unit raise ParseBufError {
   if first_space == self.line.length() {
     self.line = ""
   } else {
-    self.line = (try? self.line[first_space:].to_string())
-      .map_err(fn(_) { self.err() })
-      .unwrap_or_error()
+    self.line = self.line[first_space:].to_owned()
   }
 }
 
@@ -162,9 +150,9 @@ fn parse_value(
   let mut expecting_end = false
 
   //FIXME (from Rust) can this be done without yet another allocation per line?
-  let output = StringBuilder::new()
+  let output = StringBuilder()
   let mut substitution_mode = SubstitutionMode::None
-  let substitution_name = StringBuilder::new()
+  let substitution_name = StringBuilder()
   for index, c in input.iter2() {
     //the regex _should_ already trim whitespace off the end
     //expecting_end is meant to permit: k=v #comment
@@ -212,7 +200,7 @@ fn parse_value(
               )
               substitution_name.reset()
               if c == '$' {
-                substitution_mode = if not(strong_quote) && not(escaped) {
+                substitution_mode = if !strong_quote && !escaped {
                   SubstitutionMode::Block
                 } else {
                   SubstitutionMode::None
@@ -237,7 +225,7 @@ fn parse_value(
         }
       }
     } else if c == '$' {
-      substitution_mode = if not(strong_quote) && not(escaped) {
+      substitution_mode = if !strong_quote && !escaped {
         SubstitutionMode::Block
       } else {
         SubstitutionMode::None
@@ -289,7 +277,7 @@ fn apply_substitution(
   substitution_name : String,
   output : StringBuilder,
 ) -> Unit {
-  let env_vars = @sys.get_env_vars()
+  let env_vars = @env.get_env_vars()
   if env_vars.contains(substitution_name) {
     output.write_string(env_vars.get(substitution_name).unwrap())
   } else {

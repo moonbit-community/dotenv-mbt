@@ -1,7 +1,7 @@
 ///|
 test "substitution" {
-  @sys.set_env_var("KEY", "value")
-  @sys.set_env_var("KEY1", "value1")
+  @env.set_env_var("KEY", "value")
+  @env.set_env_var("KEY1", "value1")
   let subs = [
     "$ZZZ", "$KEY", "$KEY1", "${KEY}1", "$KEY_U", "${KEY_U}", "\\$KEY",
   ]
@@ -9,11 +9,11 @@ test "substitution" {
   let s = (
     #|    KEY1=new_value1
     #|    KEY_U=$KEY+valueU
-    #|    
+    #|
     #|    STRONG_QUOTES='{common_string}'
     #|    WEAK_QUOTES="{common_string}"
     #|    NO_QUOTES={common_string}
-    #|    
+    #|
   ).replace_all(old="{common_string}", new=common_string)
   let env_map = EnvLoader::from_string(s)
     .set_sequence(EnvSequence::InputThenEnv)
@@ -123,8 +123,8 @@ test "modify" {
       EnvSequence::InputThenEnv,
     )
     ignore(loader.load_and_modify())
-    assert_eq(@sys.get_env_vars().get("SRC").unwrap(), "env")
-    assert_eq(@sys.get_env_vars().get("FOO").unwrap(), "bar")
+    assert_eq(@env.get_env_vars().get("SRC").unwrap(), "env")
+    assert_eq(@env.get_env_vars().get("FOO").unwrap(), "bar")
   })
   // override
   temp_env({ "SRC": "env" }, fn() -> Unit raise Error {
@@ -132,7 +132,7 @@ test "modify" {
       EnvSequence::EnvThenInput,
     )
     ignore(loader.load_and_modify())
-    assert_eq(@sys.get_env_vars().get("SRC").unwrap(), "envfile")
-    assert_eq(@sys.get_env_vars().get("FOO").unwrap(), "bar")
+    assert_eq(@env.get_env_vars().get("SRC").unwrap(), "envfile")
+    assert_eq(@env.get_env_vars().get("FOO").unwrap(), "bar")
   })
 }
