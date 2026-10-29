@@ -1,0 +1,19 @@
+name = "ShellWen/dotenv"
+
+version = "0.6.1"
+
+import {
+  "moonbitlang/x@0.5.6",
+}
+
+readme = "README.md"
+
+repository = "https://github.com/moonbit-community/dotenv-mbt.git"
+
+license = "Apache-2.0"
+
+keywords = [ "dotenv", "moonbit" ]
+
+description = "Yet another dotenv utility for MoonBit."
+
+source = "src"

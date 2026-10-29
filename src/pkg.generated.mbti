@@ -11,13 +11,13 @@ pub fn[R, E : Error] temp_env(Map[String, String], () -> R raise E) -> R raise E
 // Errors
 pub suberror DotenvError {
   FileNotFound(String)
-  LineParseError(String, UInt)
+  LineParseError(String, UInt32)
   Io(Error, String)
   InvalidOp
 }
 
 pub suberror ParseBufError {
-  LineParse(String, UInt)
+  LineParse(String, UInt32)
 }
 
 // Types and methods
@@ -41,9 +41,9 @@ pub(all) enum EnvSequence {
   InputOnly
   InputThenEnv
 }
+pub fn EnvSequence::default() -> Self
 pub impl Default for EnvSequence
 
 // Type aliases
 
 // Traits
-

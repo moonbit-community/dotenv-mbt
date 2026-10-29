@@ -1,7 +1,7 @@
 ///|
 test "substitution" {
-  @sys.set_env_var("KEY", "value")
-  @sys.set_env_var("KEY1", "value1")
+  @env.set_env_var("KEY", "value")
+  @env.set_env_var("KEY1", "value1")
   let subs = [
     "$ZZZ", "$KEY", "$KEY1", "${KEY}1", "$KEY_U", "${KEY_U}", "\\$KEY",
   ]
@@ -15,8 +15,8 @@ test "substitution" {
     #|    NO_QUOTES={common_string}
     #|    
   ).replace_all(old="{common_string}", new=common_string)
-  let env_map = EnvLoader::from_string(s)
-    .set_sequence(EnvSequence::InputThenEnv)
+  let env_map = @dotenv.EnvLoader::from_string(s)
+    .set_sequence(@dotenv.EnvSequence::InputThenEnv)
     .load()
   assert_eq(env_map.get("KEY").unwrap(), "value")
   assert_eq(env_map.get("KEY1").unwrap(), "value1")
@@ -51,8 +51,8 @@ test "multiline" {
     #|    WEAK="{value}"
     #|    STRONG='{value}'
   ).replace_all(old="{value}", new=value)
-  let env_map = EnvLoader::from_string(s)
-    .set_sequence(EnvSequence::InputOnly)
+  let env_map = @dotenv.EnvLoader::from_string(s)
+    .set_sequence(@dotenv.EnvSequence::InputOnly)
     .load()
   assert_eq(env_map.get("KEY").unwrap(), "my cool value")
   assert_eq(
@@ -89,8 +89,8 @@ test "multiline comment" {
     #|" # 5 Multiline "' comment
     #|# End of env file
     #|
-  let env_map = EnvLoader::from_string(s)
-    .set_sequence(EnvSequence::InputOnly)
+  let env_map = @dotenv.EnvLoader::from_string(s)
+    .set_sequence(@dotenv.EnvSequence::InputOnly)
     .load()
   assert_eq(env_map.get("TESTKEY1").unwrap(), "test_val")
   assert_eq(env_map.get("TESTKEY2").unwrap(), "test_val_with_#_hash")
@@ -101,15 +101,15 @@ test "multiline comment" {
 
 ///|
 test "non modify" {
-  temp_env({ "SRC": "env" }, fn() -> Unit raise Error {
+  @dotenv.temp_env({ "SRC": "env" }, fn() -> Unit raise Error {
     let s = "SRC=envfile\nFOO=bar"
-    let env_map = EnvLoader::from_string(s)
-      .set_sequence(EnvSequence::EnvThenInput)
+    let env_map = @dotenv.EnvLoader::from_string(s)
+      .set_sequence(@dotenv.EnvSequence::EnvThenInput)
       .load()
     assert_eq(env_map.get("SRC").unwrap(), "envfile")
     assert_eq(env_map.get("FOO").unwrap(), "bar")
-    let env_map = EnvLoader::from_string(s)
-      .set_sequence(EnvSequence::InputThenEnv)
+    let env_map = @dotenv.EnvLoader::from_string(s)
+      .set_sequence(@dotenv.EnvSequence::InputThenEnv)
       .load()
     assert_eq(env_map.get("SRC").unwrap(), "env")
   })
@@ -118,21 +118,21 @@ test "non modify" {
 ///|
 test "modify" {
   let s = "SRC=envfile\nFOO=bar"
-  temp_env({ "SRC": "env" }, fn() -> Unit raise Error {
-    let loader = EnvLoader::from_string(s).set_sequence(
-      EnvSequence::InputThenEnv,
+  @dotenv.temp_env({ "SRC": "env" }, fn() -> Unit raise Error {
+    let loader = @dotenv.EnvLoader::from_string(s).set_sequence(
+      @dotenv.EnvSequence::InputThenEnv,
     )
     ignore(loader.load_and_modify())
-    assert_eq(@sys.get_env_vars().get("SRC").unwrap(), "env")
-    assert_eq(@sys.get_env_vars().get("FOO").unwrap(), "bar")
+    assert_eq(@env.get_env_vars().get("SRC").unwrap(), "env")
+    assert_eq(@env.get_env_vars().get("FOO").unwrap(), "bar")
   })
   // override
-  temp_env({ "SRC": "env" }, fn() -> Unit raise Error {
-    let loader = EnvLoader::from_string(s).set_sequence(
-      EnvSequence::EnvThenInput,
+  @dotenv.temp_env({ "SRC": "env" }, fn() -> Unit raise Error {
+    let loader = @dotenv.EnvLoader::from_string(s).set_sequence(
+      @dotenv.EnvSequence::EnvThenInput,
     )
     ignore(loader.load_and_modify())
-    assert_eq(@sys.get_env_vars().get("SRC").unwrap(), "envfile")
-    assert_eq(@sys.get_env_vars().get("FOO").unwrap(), "bar")
+    assert_eq(@env.get_env_vars().get("SRC").unwrap(), "envfile")
+    assert_eq(@env.get_env_vars().get("FOO").unwrap(), "bar")
   })
 }

@@ -120,7 +120,7 @@ test "var without parenthesis subbed before separators" {
 
 ///|
 test "sub var from env var" {
-  temp_env({ "KEY11": "test_user_env" }, fn() {
+  temp_env({ "KEY11": "test_user_env" }, () => {
     assert_str(
       (
         #|KEY=">${KEY11}<"
@@ -132,7 +132,7 @@ test "sub var from env var" {
 
 ///|
 test "substitute variable env variable overrides dotenv in substitution" {
-  temp_env({ "KEY11": "test_user_env" }, fn() {
+  temp_env({ "KEY11": "test_user_env" }, () => {
     assert_str(
       (
         #|KEY11=test_user
