@@ -1,0 +1,3 @@
+[default]
+# Deliberately split word in the quoted-value parsing regression fixture.
+extend-ignore-re = ["fo ur"]
