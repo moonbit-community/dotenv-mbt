@@ -7,7 +7,7 @@ priv struct DotenvIter {
 ///|
 fn DotenvIter::new(data : String) -> DotenvIter {
   let cursor = Cursor::new(data)
-  { cursor, substitution_data: @hashmap.new() }
+  { cursor, substitution_data: @hashmap.HashMap([]), }
 }
 
 ///|
@@ -17,7 +17,7 @@ fn DotenvIter::internal_load(
 ) -> EnvMap raise ParseBufError {
   self.remove_bom()
   let map = EnvMap::new()
-  for {
+  for ;; {
     let item = self.next()
     if item is None {
       break
@@ -37,10 +37,10 @@ fn DotenvIter::load(self : DotenvIter) -> EnvMap raise ParseBufError {
 ///|
 fn DotenvIter::load_and_modify(self : DotenvIter) -> EnvMap raise ParseBufError {
   // Not thread-safe
-  let vars = @sys.get_env_vars()
+  let vars = @env.get_env_vars()
   self.internal_load(fn(k, v, map) {
-    if not(vars.contains(k)) {
-      @sys.set_env_var(k, v)
+    if !vars.contains(k) {
+      @env.set_env_var(k, v)
     }
     map.map[k] = v
   })
@@ -51,7 +51,7 @@ fn DotenvIter::load_and_modify_override(
   self : DotenvIter,
 ) -> EnvMap raise ParseBufError {
   self.internal_load(fn(k, v, map) {
-    @sys.set_env_var(k, v)
+    @env.set_env_var(k, v)
     map.map[k] = v
   })
 }
@@ -84,9 +84,12 @@ priv enum ParseState {
 } derive(Eq)
 
 ///|
-fn ParseState::eval_end(self : ParseState, buf : String) -> (UInt, ParseState) {
+fn ParseState::eval_end(
+  self : ParseState,
+  buf : String,
+) -> (UInt32, ParseState) {
   let mut cur_state = self
-  let mut cur_pos : UInt = 0
+  let mut cur_pos : UInt32 = 0
   for pos, c in buf.iter2() {
     cur_pos = pos.reinterpret_as_uint()
     cur_state = match cur_state {
@@ -133,7 +136,7 @@ fn ParseState::eval_end(self : ParseState, buf : String) -> (UInt, ParseState) {
 fn DotenvIter::next(
   self : DotenvIter,
 ) -> Result[(String, String), ParseBufError]? {
-  for {
+  for ;; {
     let line = match self.cursor.next_line() {
       Some(Ok(line)) => line
       Some(Err(e)) => return Some(Err(e))
@@ -153,5 +156,5 @@ fn DotenvIter::next(
 
 ///|
 pub suberror ParseBufError {
-  LineParse(String, UInt)
+  LineParse(String, UInt32)
 }

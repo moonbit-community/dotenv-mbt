@@ -2,7 +2,7 @@
 pub suberror DotenvError {
   /// When the file is not found.
   FileNotFound(String)
-  LineParseError(String, UInt)
+  LineParseError(String, UInt32)
   /// An IO error may be encountered when reading from a file.
   Io(Error, String)
   /// When `load_and_modify` is called with `EnvSequence::EnvOnly`

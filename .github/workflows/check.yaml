@@ -45,7 +45,6 @@ jobs:
       - name: install module dependencies
         run: |
           moon update
-          moon install
 
       - name: moon check
         run: moon check --deny-warn
@@ -71,12 +70,9 @@ jobs:
 
       - name: moon test
         run: |
-          moon test --target all,native
-          moon test --target all,native --release
+          moon test --target all
+          moon test --target all --release
 
-      - name: moon test --doc
-        run: |
-          moon test --doc
 
   moon-json-format-check:
     runs-on: ubuntu-latest

@@ -6,7 +6,7 @@ struct EnvMap {
 
 ///|
 fn EnvMap::new() -> EnvMap {
-  { map: @hashmap.new() }
+  { map: @hashmap.HashMap([]), }
 }
 
 ///|
@@ -27,7 +27,7 @@ pub(all) enum EnvSequence {
 }
 
 ///|
-pub impl Default for EnvSequence with default() {
+pub impl Default for EnvSequence with fn default() {
   EnvSequence::InputThenEnv
 }
 
@@ -40,15 +40,15 @@ pub struct EnvLoader {
 
 ///|
 pub fn EnvLoader::from_path(path : String) -> EnvLoader raise DotenvError {
-  let str = (try? @fs.read_file_to_string(path))
+  let str = (Ok(@fs.read_file_to_string(path)) catch { e => Err(e) })
     .map_err(fn(e) { DotenvError::Io(e, path) })
     .unwrap_or_error()
-  { path: Some(path), str, sequence: EnvSequence::default() }
+  { path: Some(path), str, sequence: EnvSequence::default(), }
 }
 
 ///|
 pub fn EnvLoader::from_string(str : String) -> EnvLoader {
-  { path: None, str, sequence: EnvSequence::default() }
+  { path: None, str, sequence: EnvSequence::default(), }
 }
 
 ///|
@@ -75,7 +75,7 @@ pub fn EnvLoader::set_sequence(
 ///|
 fn EnvLoader::load_input(self : EnvLoader) -> EnvMap raise DotenvError {
   let iter = DotenvIter::new(self.str)
-  let result = try? iter.load()
+  let result = Ok(iter.load()) catch { e => Err(e) }
   match result {
     Ok(env_map) => env_map
     Err(e) =>
@@ -91,7 +91,7 @@ fn EnvLoader::load_input_and_modify(
   self : EnvLoader,
 ) -> EnvMap raise DotenvError {
   let iter = DotenvIter::new(self.str)
-  (try? iter.load_and_modify())
+  (Ok(iter.load_and_modify()) catch { e => Err(e) })
   .map_err(fn(e) {
     match e {
       ParseBufError::LineParse(line, pos) =>
@@ -106,7 +106,7 @@ fn EnvLoader::load_input_and_modify_override(
   self : EnvLoader,
 ) -> EnvMap raise DotenvError {
   let iter = DotenvIter::new(self.str)
-  let result = try? iter.load_and_modify_override()
+  let result = Ok(iter.load_and_modify_override()) catch { e => Err(e) }
   result
   .map_err(fn(e) {
     match e {
@@ -119,7 +119,7 @@ fn EnvLoader::load_input_and_modify_override(
 
 ///|
 fn env_vars() -> @hashmap.HashMap[String, String] {
-  let vars = @sys.get_env_vars()
+  let vars = @env.get_env_vars()
   @hashmap.from_iter(vars.iter())
 }
 
@@ -129,12 +129,12 @@ fn env_vars() -> @hashmap.HashMap[String, String] {
 /// This is the primary method for loading environment variables.
 pub fn EnvLoader::load(self : EnvLoader) -> EnvMap raise DotenvError {
   match self.sequence {
-    EnvOnly => { map: env_vars() }
+    EnvOnly => { map: env_vars(), }
     EnvThenInput => {
       let existing = env_vars()
       let input = self.load_input()
       input.map.each(fn(k, v) { existing.set(k, v) })
-      { map: existing }
+      { map: existing, }
     }
     InputOnly => self.load_input()
     InputThenEnv => {
@@ -149,10 +149,11 @@ pub fn EnvLoader::load(self : EnvLoader) -> EnvMap raise DotenvError {
 ///|
 /// Shortcut for loading environment variables from a file.
 pub fn load(
-  path? : String = "./.env",
-  ignore_file_not_found? : Bool = true,
+  path~ : String = "./.env",
+  ignore_file_not_found~ : Bool = true,
 ) -> EnvMap raise DotenvError {
-  if @fs.path_exists(path) && (try? @fs.is_file(path)).or(false) {
+  if @fs.path_exists(path) &&
+    (Ok(@fs.is_file(path)) catch { e => Err(e) }).unwrap_or(false) {
     EnvLoader::from_path(path).load()
   } else if ignore_file_not_found {
     EnvLoader::from_string("").set_sequence(EnvSequence::EnvOnly).load()
@@ -164,7 +165,7 @@ pub fn load(
 ///|
 /// Loads environment variables into a hash map, modifying the existing environment.
 ///
-/// This calls `@sys.set_env_var` internally.
+/// This calls `@env.set_env_var` internally.
 pub fn EnvLoader::load_and_modify(self : EnvLoader) -> EnvMap raise DotenvError {
   match self.sequence {
     InputOnly => raise DotenvError::InvalidOp
@@ -172,15 +173,15 @@ pub fn EnvLoader::load_and_modify(self : EnvLoader) -> EnvMap raise DotenvError 
       let existing = env_vars()
       let input = self.load_input_and_modify_override()
       input.map.each(fn(k, v) { existing.set(k, v) })
-      { map: existing }
+      { map: existing, }
     }
     EnvOnly => self.load_input_and_modify_override()
     InputThenEnv => {
       let existing = env_vars()
       let input = self.load_input_and_modify()
       input.map.each(fn(k, v) {
-        if not(existing.contains(k)) {
-          @sys.set_env_var(k, v)
+        if !existing.contains(k) {
+          @env.set_env_var(k, v)
         }
       })
       existing.each(fn(k, v) { input.map.set(k, v) })
@@ -192,10 +193,11 @@ pub fn EnvLoader::load_and_modify(self : EnvLoader) -> EnvMap raise DotenvError 
 ///|
 /// Shortcut for loading environment variables from a file and modifying the existing environment.
 pub fn load_and_modify(
-  path? : String = "./.env",
-  ignore_file_not_found? : Bool = true,
+  path~ : String = "./.env",
+  ignore_file_not_found~ : Bool = true,
 ) -> EnvMap raise DotenvError {
-  if @fs.path_exists(path) && (try? @fs.is_file(path)).or(false) {
+  if @fs.path_exists(path) &&
+    (Ok(@fs.is_file(path)) catch { e => Err(e) }).unwrap_or(false) {
     EnvLoader::from_path(path).load_and_modify()
   } else if ignore_file_not_found {
     // If the file is not found, we do the same as in `load`.
